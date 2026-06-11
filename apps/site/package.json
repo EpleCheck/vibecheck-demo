@@ -12,7 +12,8 @@
   "dependencies": {
     "astro": "^5.7.0",
     "@astrojs/sitemap": "^3.3.0",
-    "@vibecheck/schema": "*"
+    "@vibecheck/schema": "*",
+    "yaml": "^2.5.0"
   },
   "devDependencies": {
     "typescript": "^5.6.0"

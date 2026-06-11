@@ -4,7 +4,16 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
 import { z } from 'zod';
 import YAML from 'yaml';
-import { pageSchema, postSchema, type Post, sectionSchema, seoSchema, slugSchema } from '@vibecheck/schema';
+import {
+  pageSchema,
+  postSchema,
+  type Post,
+  sectionSchema,
+  seoSchema,
+  slugSchema,
+  navSchema,
+  type NavItem,
+} from '@vibecheck/schema';
 import { registerOAuth, verifyAccessToken, baseUrl } from './oauth.js';
 import {
   DEFAULT_BRANCH,
@@ -21,6 +30,9 @@ import {
 const PAGES_DIR = process.env.VIBECHECK_PAGES_DIR ?? 'src/content/pages';
 const POSTS_DIR = process.env.VIBECHECK_POSTS_DIR ?? 'src/content/blog';
 const REDIRECTS_PATH = process.env.VIBECHECK_REDIRECTS_PATH ?? 'public/_redirects';
+// The nav menu data file. Sibling of the pages dir by default (…/content/nav.yaml).
+const NAV_PATH =
+  process.env.VIBECHECK_NAV_PATH ?? `${PAGES_DIR.replace(/\/pages\/?$/, '')}/nav.yaml`;
 
 function pageFilePath(slug: string): string {
   return `${PAGES_DIR}/${slug}.yaml`;
@@ -60,6 +72,24 @@ function serializePage(page: unknown): string {
     '# Managed by VibeCheck. Structure must match the @vibecheck/schema content\n' +
     '# contract (mirrored by the site at src/content.config.ts).\n';
   return header + YAML.stringify(page);
+}
+
+/** Serialize the nav menu (ordered list) to a YAML file body. */
+function serializeNav(items: NavItem[]): string {
+  const header =
+    '# Site nav menu — managed by VibeCheck. Order here is the menu order.\n' +
+    '# Each item: { label, href, external? }. Internal hrefs must point at a real\n' +
+    '# page (the site build fails on a dangling link). external: true = off-site.\n';
+  // Drop the default `external: false` so the file stays clean for hand-editing.
+  const clean = items.map((i) => (i.external ? i : { label: i.label, href: i.href }));
+  return header + YAML.stringify(clean);
+}
+
+/** Read + validate the nav menu, or [] if the file doesn't exist yet. */
+async function readNav(): Promise<NavItem[]> {
+  const raw = await getFileRaw(NAV_PATH);
+  if (raw === null) return [];
+  return navSchema.parse(YAML.parse(raw) ?? []);
 }
 
 type PublishMode = 'direct' | 'merge_request';
@@ -403,6 +433,102 @@ function buildServer(): McpServer {
         actions: [{ action: 'update', file_path: REDIRECTS_PATH, content }],
       });
       return ok(`Added redirect ${from} -> ${to} (${code}).\n${result}`);
+    },
+  );
+
+  // ---- Nav menu (typed, ordered; rendered by the site Header) -------------
+
+  server.registerTool(
+    'list_nav',
+    {
+      title: 'List nav menu',
+      description: 'List the site navigation menu items, in menu order.',
+      inputSchema: {},
+    },
+    async () => {
+      const items = await readNav();
+      if (!items.length) return ok('The nav menu is empty.');
+      return ok(
+        'Nav menu (in order):\n' +
+          items
+            .map((i, n) => `${n}. ${i.label} -> ${i.href}${i.external ? ' (external)' : ''}`)
+            .join('\n'),
+      );
+    },
+  );
+
+  server.registerTool(
+    'add_nav_item',
+    {
+      title: 'Add page to nav menu',
+      description:
+        'Add a link to the site navigation menu. To add an existing page, pass its href (e.g. "/about/"); the label defaults to the page title. For an off-site link pass external:true and a label. Fails if an internal page does not exist or the href is already in the menu. Optional position inserts at a 0-based index (default: end).',
+      inputSchema: {
+        href: z.string().describe('Internal path like "/about/" (or full URL if external).'),
+        label: z.string().optional().describe('Menu text. Defaults to the page title for an internal href.'),
+        external: z.boolean().default(false),
+        position: z.number().int().min(0).optional().describe('0-based insert index; default appends.'),
+        publishMode: publishModeSchema,
+      },
+    },
+    async ({ href, label, external, position, publishMode }) => {
+      const current = await readNav();
+      if (current.some((i) => i.href === href)) return fail(`The nav menu already links to "${href}".`);
+
+      let resolvedLabel = label;
+      if (!external && href.startsWith('/')) {
+        const slug = href.replace(/^\/+|\/+$/g, '');
+        if (slug !== '' && slug !== 'home') {
+          const pf = pageFilePath(slug);
+          if (!(await fileExists(pf)))
+            return fail(
+              `No page "${slug}" exists (${pf}). Create the page first, or pass external:true for an off-site link.`,
+            );
+          if (!resolvedLabel) {
+            const raw = await getFileRaw(pf);
+            const title = raw ? (YAML.parse(raw)?.title as string | undefined) : undefined;
+            resolvedLabel = title ?? slug;
+          }
+        } else if (!resolvedLabel) {
+          resolvedLabel = 'Home';
+        }
+      }
+      if (!resolvedLabel) return fail('A label is required (e.g. for external links).');
+
+      const item: NavItem = { label: resolvedLabel, href, external: external ?? false };
+      const next = [...current];
+      next.splice(position ?? next.length, 0, item);
+      const exists = await fileExists(NAV_PATH);
+      const result = await publish({
+        mode: publishMode as PublishMode,
+        message: `Add nav item: ${resolvedLabel}`,
+        actions: [{ action: exists ? 'update' : 'create', file_path: NAV_PATH, content: serializeNav(next) }],
+      });
+      return ok(`Added "${resolvedLabel}" -> ${href} to the nav menu.\n${result}`);
+    },
+  );
+
+  server.registerTool(
+    'remove_nav_item',
+    {
+      title: 'Remove from nav menu',
+      description: 'Remove a link from the site navigation menu by its href (e.g. "/about/"). Does not delete the page.',
+      inputSchema: {
+        href: z.string(),
+        publishMode: publishModeSchema,
+      },
+    },
+    async ({ href, publishMode }) => {
+      const current = await readNav();
+      const next = current.filter((i) => i.href !== href);
+      if (next.length === current.length)
+        return fail(`No nav item with href "${href}". Use list_nav to see the current menu.`);
+      const result = await publish({
+        mode: publishMode as PublishMode,
+        message: `Remove nav item: ${href}`,
+        actions: [{ action: 'update', file_path: NAV_PATH, content: serializeNav(next) }],
+      });
+      return ok(`Removed "${href}" from the nav menu.\n${result}`);
     },
   );
 

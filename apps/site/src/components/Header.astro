@@ -1,14 +1,41 @@
 ---
-// Site header — appears on every page via Base.astro. Edit the `nav` array to
-// match your pages. The current path drives the active-link state.
+// Site header — appears on every page via Base.astro. The menu is DATA, not code:
+// it's read from src/content/nav.yaml (typed by @vibecheck/schema), so the MCP can
+// edit the nav as content. The current path drives the active-link state.
 import Navbar from './ui/Navbar.astro';
 import { withBase } from '../lib/url';
-const nav = [
-  { label: 'Home', href: '/' },
-  { label: 'About', href: '/about/' },
-  { label: 'Pricing', href: '/pricing/' },
-  { label: 'FAQ', href: '/faq/' },
-  { label: 'Contact', href: '/contact/' },
-].map((l) => ({ ...l, href: withBase(l.href) }));
+import { getCollection } from 'astro:content';
+import { navSchema } from '@vibecheck/schema';
+import YAML from 'yaml';
+// Vite raw import of the nav data file — re-read on every build.
+// @ts-ignore - `?raw` query has no type declaration
+import navRaw from '../content/nav.yaml?raw';
+
+const nav = navSchema.parse(YAML.parse(navRaw) ?? []);
+
+// Build-time integrity: every internal nav link must resolve to a published page
+// (or the home root). Fail the build on a dangling link — the same schema-safe
+// guarantee as an unknown section type or integration. This is exactly what a
+// hardcoded array could never give you.
+const livePages = new Set(
+  (await getCollection('pages', ({ data }) => !data.draft)).map((p) => p.id),
+);
+const resolves = (href: string) => {
+  const slug = href.replace(/^\/+|\/+$/g, '');
+  return slug === '' || slug === 'home' || livePages.has(slug);
+};
+for (const item of nav) {
+  if (!item.external && item.href.startsWith('/') && !resolves(item.href)) {
+    throw new Error(
+      `Nav item "${item.label}" links to "${item.href}", which is not a published page. ` +
+        `Fix src/content/nav.yaml (or create the page / mark it external).`,
+    );
+  }
+}
+
+const links = nav.map((l) => ({
+  label: l.label,
+  href: l.external ? l.href : withBase(l.href),
+}));
 ---
-<Navbar links={nav} active={Astro.url.pathname} homeHref={withBase('/')} />
+<Navbar links={links} active={Astro.url.pathname} homeHref={withBase('/')} />

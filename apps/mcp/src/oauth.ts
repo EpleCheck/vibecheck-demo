@@ -71,6 +71,7 @@ function approvalHtml(p: {
   code_challenge: string;
   state: string;
   scope: string;
+  token: string;
   error?: string;
 }): string {
   const h = (s: string) => escapeHtml(s);
@@ -82,27 +83,19 @@ input{width:100%;padding:.6rem;font:inherit;border:1px solid #ccc;border-radius:
 button{margin-top:1rem;padding:.7rem 1.2rem;background:#cf1761;color:#fff;border:0;border-radius:6px;font:inherit;cursor:pointer}
 .err{color:#b00020}</style></head><body>
 <h1>Connect to VibeCheck MCP</h1>
-<p>Paste your MCP token to authorize this connection.</p>
+<p>This is a public demo — the token is pre-filled. Just click <b>Approve</b>.<br>
+<small>This demo token rotates every 6 hours.</small></p>
 ${p.error ? `<p class="err">${h(p.error)}</p>` : ''}
 <form method="POST" action="/authorize" id="f">
-  <input type="password" name="token" id="tok" placeholder="MCP-token" autocomplete="current-password" autofocus required>
-  <label style="display:flex;gap:.5rem;align-items:center;margin-top:.6rem;font-size:.9rem">
-    <input type="checkbox" id="remember" checked style="width:auto"> Husk token i denne nettleseren
-  </label>
+  <input type="text" name="token" id="tok" value="${h(p.token)}" autocomplete="off" spellcheck="false" autofocus required>
   <input type="hidden" name="client_id" value="${h(p.client_id)}">
   <input type="hidden" name="redirect_uri" value="${h(p.redirect_uri)}">
   <input type="hidden" name="code_challenge" value="${h(p.code_challenge)}">
   <input type="hidden" name="state" value="${h(p.state)}">
   <input type="hidden" name="scope" value="${h(p.scope)}">
-  <button type="submit">Godkjenn</button>
+  <button type="submit">Approve</button>
 </form>
-<script>
-(function(){
-  var tok=document.getElementById('tok'),rem=document.getElementById('remember'),f=document.getElementById('f');
-  try{var s=localStorage.getItem('ec_mcp_token');if(s){tok.value=s;rem.checked=true;}}catch(e){}
-  f.addEventListener('submit',function(){try{rem.checked?localStorage.setItem('ec_mcp_token',tok.value):localStorage.removeItem('ec_mcp_token');}catch(e){}});
-})();
-</script></body></html>`;
+</body></html>`;
 }
 
 export function registerOAuth(
@@ -184,6 +177,7 @@ export function registerOAuth(
         code_challenge: q.code_challenge,
         state: q.state ?? '',
         scope: q.scope ?? 'mcp',
+        token: opts.gateToken,
       }),
     );
   });
@@ -204,6 +198,7 @@ export function registerOAuth(
           code_challenge: b.code_challenge,
           state: b.state ?? '',
           scope: b.scope ?? 'mcp',
+          token: opts.gateToken,
           error: 'Feil token. Prøv igjen.',
         }),
       );

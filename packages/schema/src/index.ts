@@ -199,3 +199,20 @@ export const slugSchema = z
     /^[a-z0-9]+(?:-[a-z0-9]+)*(?:\/[a-z0-9]+(?:-[a-z0-9]+)*)*$/,
     'Slug must be lowercase, hyphen-separated, e.g. "about" or "pricing/teams".',
   );
+
+/**
+ * Navigation menu. A typed, ordered list — the site's Header renders it instead
+ * of a hardcoded array, and the MCP edits it as data. Internal hrefs must point
+ * at a real page; the renderer fails the build on a dangling link, the same
+ * schema-safe guarantee as unknown section types or integrations. `external`
+ * marks off-site links (left as-is, not base-path-prefixed).
+ */
+export const navItemSchema = z.object({
+  label: z.string(),
+  href: z.string(),
+  external: z.boolean().default(false),
+});
+
+export const navSchema = z.array(navItemSchema);
+
+export type NavItem = z.infer<typeof navItemSchema>;
