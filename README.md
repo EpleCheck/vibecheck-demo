@@ -63,9 +63,19 @@ apps/mcp          @vibecheck/mcp     — the MCP server: lets an agent edit from
 
 ## ✨ Try these prompts
 
-Once the MCP is connected to Claude, paste any of these to the agent. Each one
-commits to the repo and the site rebuilds in ~a minute. Add **"publish directly"**
-so it goes live without opening a PR.
+**Connect to the live demo's MCP first.** In Claude (claude.ai, Claude Desktop, or
+Claude Code) add a custom **HTTP** connector pointing at:
+
+```
+https://vibecheck-mcp.eplecheck.no/mcp
+```
+
+When Claude asks you to authorize, the token is **pre-filled — just click Approve**
+(it rotates every 6 hours, so re-approve if needed). No token to copy.
+
+Then paste any of these to the agent. Each one commits to this repo and the site at
+**[vibecheck.eplecheck.no](https://vibecheck.eplecheck.no)** rebuilds in ~a minute.
+Add **"publish directly"** so it goes live without opening a PR.
 
 **Build a whole landing page in one shot**
 
