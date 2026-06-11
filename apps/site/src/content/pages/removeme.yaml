@@ -1,0 +1,31 @@
+# Managed by VibeCheck. Structure must match the @vibecheck/schema content
+# contract (mirrored by the site at src/content.config.ts).
+title: REMOVEME
+description: A throwaway test page. Safe to delete.
+seo:
+  title: REMOVEME — test page
+  description: Temporary scratch page created during an MCP test. Delete me.
+draft: false
+sections:
+  - type: hero
+    heading: 👋 This page is just a test
+    subheading: Created to check the VibeCheck MCP server. Nothing here is real —
+      feel free to delete it.
+    ctaLabel: Back home
+    ctaHref: /
+  - type: features
+    heading: Completely random facts
+    items:
+      - title: Octopuses have three hearts
+        body: Two pump blood to the gills, one to the rest of the body. The main heart
+          stops beating when they swim.
+      - title: Bananas are berries
+        body: Botanically speaking. Strawberries, confusingly, are not.
+      - title: Honey never spoils
+        body: Archaeologists have found 3,000-year-old honey in Egyptian tombs that was
+          still edible.
+  - type: cta
+    heading: Done looking? Delete it.
+    body: This page exists only to prove the create_page tool works.
+    ctaLabel: Go to home
+    ctaHref: /
