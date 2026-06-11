@@ -6,6 +6,11 @@
 **The CMS you talk to.** A git-backed, schema-safe, headless CMS you edit by
 chatting with an AI agent.
 
+> ⚠️ **This repo just backs the live demo — it is *not* the starter.**
+> Don't fork *this* one. To build your own VibeCheck site, use the template:
+> **[EpleCheck/vibecheck](https://github.com/EpleCheck/vibecheck)** → click
+> **“Use this template.”**
+
 🔗 **[Live demo →](https://vibecheck.eplecheck.no)** — a real site you can edit by
 chatting with an AI agent, wired to a live MCP server. You bring the *vibe* — a
 sentence to the agent — it does the *check*: validates against a schema, commits to
