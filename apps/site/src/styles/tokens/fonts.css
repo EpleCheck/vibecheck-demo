@@ -1,0 +1,10 @@
+/* EpleCheck webfonts.
+ * Primary: Hanken Grotesk — a warm, highly legible humanist sans. Chosen for an
+ * Apple-clean feel that stays friendly and readable for an older audience.
+ * Mono: JetBrains Mono — for the network/tech ("nerdete") blog content
+ * (IP addresses, code, terminal snippets).
+ *
+ * NOTE: loaded from the Google Fonts CDN. To fully self-host, drop the woff2
+ * files into assets/fonts/ and replace this @import with local @font-face rules.
+ */
+@import url('https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@400;500;700&display=swap');

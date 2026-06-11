@@ -1,0 +1,14 @@
+---
+// Site header — appears on every page via Base.astro. Edit the `nav` array to
+// match your pages. The current path drives the active-link state.
+import Navbar from './ui/Navbar.astro';
+import { withBase } from '../lib/url';
+const nav = [
+  { label: 'Home', href: '/' },
+  { label: 'About', href: '/about/' },
+  { label: 'Pricing', href: '/pricing/' },
+  { label: 'FAQ', href: '/faq/' },
+  { label: 'Contact', href: '/contact/' },
+].map((l) => ({ ...l, href: withBase(l.href) }));
+---
+<Navbar links={nav} active={Astro.url.pathname} homeHref={withBase('/')} />

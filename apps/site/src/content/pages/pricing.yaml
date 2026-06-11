@@ -1,0 +1,44 @@
+title: Pricing
+description: VibeCheck is open source — these tiers are a demo of the pricing section.
+sections:
+  - type: hero
+    heading: Pricing
+    subheading: VibeCheck is open source. These tiers just demo the pricing section type.
+
+  - type: pricing
+    heading: Plans
+    plans:
+      - name: Open Source
+        price: $0
+        unit: forever
+        features:
+          - Self-host on Vercel / Netlify / Pages
+          - Edit with Claude Code
+          - Community support
+        ctaLabel: Use the template
+        ctaHref: /
+        highlighted: false
+      - name: Team
+        price: $19
+        unit: per editor / month
+        features:
+          - Hosted MCP server
+          - Edit from anywhere
+          - Roles & review
+        ctaLabel: Start free trial
+        ctaHref: /contact/
+        highlighted: true
+      - name: Enterprise
+        price: Let's talk
+        features:
+          - SSO & audit log
+          - Custom schema & components
+          - Priority support
+        ctaLabel: Contact us
+        ctaHref: /contact/
+
+  - type: cta
+    heading: Questions?
+    body: We're happy to help you get set up.
+    ctaLabel: Contact us
+    ctaHref: /contact/

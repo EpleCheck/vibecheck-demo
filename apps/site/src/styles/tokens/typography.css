@@ -1,0 +1,79 @@
+/* ==========================================================================
+   EpleCheck — Typography tokens
+   Larger base size and generous line-height for an older, accessibility-minded
+   audience. Hanken Grotesk everywhere; JetBrains Mono for technical content.
+   ========================================================================== */
+:root {
+  /* --- Families ------------------------------------------------------- */
+  --font-sans: "Hanken Grotesk", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+  /* Semantic family aliases */
+  --font-display: var(--font-sans);
+  --font-body:    var(--font-sans);
+  --font-code:    var(--font-mono);
+
+  /* --- Weights -------------------------------------------------------- */
+  --weight-regular:  400;
+  --weight-medium:   500;
+  --weight-semibold: 600;
+  --weight-bold:     700;
+  --weight-black:    800;
+
+  /* --- Size scale (17px base for legibility) -------------------------- */
+  --text-xs:   0.8125rem; /* 13px */
+  --text-sm:   0.9375rem; /* 15px */
+  --text-base: 1.0625rem; /* 17px */
+  --text-lg:   1.25rem;   /* 20px */
+  --text-xl:   1.5rem;    /* 24px */
+  --text-2xl:  1.95rem;   /* 31px */
+  --text-3xl:  2.4rem;    /* 38px — legacy h1 */
+  --text-4xl:  3rem;      /* 48px */
+  --text-5xl:  3.75rem;   /* 60px */
+
+  /* --- Line heights --------------------------------------------------- */
+  --leading-tight:   1.1;
+  --leading-snug:    1.25;
+  --leading-normal:  1.6;  /* legacy body */
+  --leading-relaxed: 1.75;
+
+  /* --- Letter spacing ------------------------------------------------- */
+  --tracking-tight:  -0.02em;
+  --tracking-snug:   -0.01em;
+  --tracking-normal: 0;
+  --tracking-wide:   0.04em;
+
+  /* ====================================================================
+     SEMANTIC TYPE ROLES
+     ==================================================================== */
+  --type-display-size:    var(--text-5xl);
+  --type-display-weight:  var(--weight-black);
+  --type-display-leading: var(--leading-tight);
+
+  --type-h1-size:    var(--text-3xl);
+  --type-h1-weight:  var(--weight-bold);
+  --type-h1-leading: var(--leading-tight);
+
+  --type-h2-size:    var(--text-2xl);
+  --type-h2-weight:  var(--weight-bold);
+  --type-h2-leading: var(--leading-snug);
+
+  --type-h3-size:    var(--text-xl);
+  --type-h3-weight:  var(--weight-semibold);
+  --type-h3-leading: var(--leading-snug);
+
+  --type-lead-size:    var(--text-lg);
+  --type-lead-weight:  var(--weight-regular);
+  --type-lead-leading: var(--leading-normal);
+
+  --type-body-size:    var(--text-base);
+  --type-body-weight:  var(--weight-regular);
+  --type-body-leading: var(--leading-normal);
+
+  --type-small-size:   var(--text-sm);
+  --type-small-weight: var(--weight-regular);
+
+  --type-overline-size:     var(--text-xs);
+  --type-overline-weight:   var(--weight-bold);
+  --type-overline-tracking: var(--tracking-wide);
+}

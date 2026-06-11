@@ -1,0 +1,52 @@
+/* ==========================================================================
+   EpleCheck — Spacing, radii, shadows, borders, layout
+   The legacy site is border-led and airy: 1px hairline borders, soft radii
+   (6px controls / 10px cards), almost no shadow. We keep that restraint and
+   add a gentle elevation system for overlays.
+   ========================================================================== */
+:root {
+  /* --- Spacing scale (4px base) -------------------------------------- */
+  --space-0:  0;
+  --space-1:  0.25rem; /* 4 */
+  --space-2:  0.5rem;  /* 8 */
+  --space-3:  0.75rem; /* 12 */
+  --space-4:  1rem;    /* 16 */
+  --space-5:  1.25rem; /* 20 */
+  --space-6:  1.5rem;  /* 24 */
+  --space-8:  2rem;    /* 32 */
+  --space-10: 2.5rem;  /* 40 */
+  --space-12: 3rem;    /* 48 */
+  --space-16: 4rem;    /* 64 */
+  --space-20: 5rem;    /* 80 */
+  --space-24: 6rem;    /* 96 */
+
+  /* --- Radii ---------------------------------------------------------- */
+  --radius-xs:   4px;
+  --radius-sm:   6px;   /* buttons, inputs (legacy) */
+  --radius-md:   10px;  /* cards (legacy) */
+  --radius-lg:   16px;
+  --radius-xl:   24px;
+  --radius-pill: 999px;
+
+  /* --- Border widths -------------------------------------------------- */
+  --border-hairline: 1px;
+  --border-thick:    2px;
+
+  /* --- Shadows (soft, low-contrast — green-tinted ink) ---------------- */
+  --shadow-xs:    0 1px 2px rgba(26, 26, 26, 0.05);
+  --shadow-sm:    0 1px 3px rgba(26, 26, 26, 0.08), 0 1px 2px rgba(26, 26, 26, 0.04);
+  --shadow-md:    0 4px 12px rgba(26, 26, 26, 0.08);
+  --shadow-lg:    0 12px 28px rgba(26, 26, 26, 0.12);
+  --shadow-focus: 0 0 0 3px rgba(236, 36, 115, 0.32); /* magenta-500 @ 32% */
+
+  /* --- Layout --------------------------------------------------------- */
+  --container-max: 72rem;  /* legacy --maxw */
+  --container-pad: 1.25rem;
+
+  /* --- Motion --------------------------------------------------------- */
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1); /* @kind other */
+  --ease-out:      cubic-bezier(0.16, 1, 0.3, 1); /* @kind other */
+  --duration-fast: 120ms; /* @kind other */
+  --duration-base: 200ms; /* @kind other */
+  --duration-slow: 320ms; /* @kind other */
+}

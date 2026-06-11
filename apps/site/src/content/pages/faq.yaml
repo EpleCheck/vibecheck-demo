@@ -1,0 +1,36 @@
+title: FAQ
+description: Common questions about VibeCheck — the CMS you talk to.
+sections:
+  - type: hero
+    heading: Frequently asked questions
+    subheading: The short answers. Still stuck? Use the contact form.
+
+  - type: faq
+    heading: About VibeCheck
+    items:
+      - question: What is VibeCheck?
+        answer: >-
+          A git-backed, schema-safe headless CMS you edit by chatting with an AI
+          agent. A page is typed data, not markup, so machine-generated content
+          can't break the build.
+      - question: Can the AI agent break my site?
+        answer: >-
+          No. Every change is validated against the content schema at build
+          time, and CI runs the same build. A page that doesn't fit the schema
+          never deploys.
+      - question: Do I need to run a server?
+        answer: >-
+          No. The site builds to static HTML and deploys to Vercel, Netlify, or
+          Cloudflare Pages with zero config. The MCP server is optional — only
+          needed to edit from outside a local checkout.
+      - question: How do I add a new kind of section?
+        answer: >-
+          Add the section to the zod union in the schema package and a matching
+          branch in the renderer. The MCP picks up the schema change
+          automatically. This FAQ section is itself an example.
+
+  - type: cta
+    heading: Still have a question?
+    body: We're happy to help.
+    ctaLabel: Get in touch
+    ctaHref: /contact/

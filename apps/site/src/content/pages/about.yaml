@@ -1,0 +1,37 @@
+title: About VibeCheck
+description: How the agentic CMS works — a content schema, a renderer, and an optional MCP server.
+sections:
+  - type: hero
+    heading: How it works
+    subheading: >-
+      A content schema, a renderer, and an optional MCP server — so an AI agent
+      can edit your site safely.
+
+  - type: richtext
+    html: >-
+      <h2>Two ways to edit</h2>
+      <ul>
+        <li><strong>Claude Code, local</strong> — open the repo in Claude Code and
+        edit the YAML directly. The schema validates every change at build
+        time.</li>
+        <li><strong>MCP server, anywhere</strong> — run the VibeCheck MCP server
+        and edit from Claude on the web, desktop, or your phone — no checkout
+        needed.</li>
+      </ul>
+      <h2>Content is data, not markup</h2>
+      <p>A page is a list of typed sections — hero, features, pricing, cta,
+      richtext, form. Only richtext carries raw HTML, so machine-generated
+      content can't break the build.</p>
+
+  - type: embed
+    heading: See it in action
+    provider: youtube
+    id: aqz-KE-bpKQ
+    title: VibeCheck demo video
+    caption: A typed embed — content supplies only the video id, never raw iframe HTML.
+
+  - type: cta
+    heading: See the pricing
+    body: Simple, transparent tiers.
+    ctaLabel: View pricing
+    ctaHref: /pricing/

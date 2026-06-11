@@ -1,0 +1,40 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import PageRenderer from '../components/PageRenderer.astro';
+
+// One route for every page. `home` is rendered by index.astro, so skip it here.
+export async function getStaticPaths() {
+  const pages = (await getCollection('pages', ({ data }) => !data.draft)).filter(
+    (p) => p.id !== 'home',
+  );
+
+  const titleById = new Map(pages.map((p) => [p.id, p.data.title]));
+  const humanize = (s: string) =>
+    s.split('/').pop()!.replace(/-/g, ' ').replace(/^./, (c) => c.toUpperCase());
+
+  // Breadcrumb trail from the slug path, using real ancestor page titles.
+  const crumbsFor = (id: string, lang?: string) => {
+    if (!id.includes('/')) return null;
+    const segs = id.split('/');
+    const crumbs = [{ name: lang && lang.startsWith('nb') ? 'Hjem' : 'Home', url: '/' }];
+    let acc = '';
+    for (const seg of segs) {
+      acc = acc ? `${acc}/${seg}` : seg;
+      crumbs.push({ name: titleById.get(acc) ?? humanize(acc), url: `/${acc}/` });
+    }
+    return crumbs;
+  };
+
+  return pages.map((page) => ({
+    params: { slug: page.id },
+    props: { entry: page, breadcrumbs: crumbsFor(page.id, page.data.lang) },
+  }));
+}
+
+const { entry, breadcrumbs } = Astro.props;
+const { data } = entry;
+---
+<Base title={data.title} description={data.description} seo={data.seo} breadcrumbs={breadcrumbs} lang={data.lang}>
+  <PageRenderer sections={data.sections} />
+</Base>

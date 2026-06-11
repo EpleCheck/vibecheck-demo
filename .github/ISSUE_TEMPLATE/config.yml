@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Questions & ideas (Discussions)
+    url: https://github.com/EpleCheck/vibecheck/discussions
+    about: Ask questions, share what you built, or float an idea before filing an issue.

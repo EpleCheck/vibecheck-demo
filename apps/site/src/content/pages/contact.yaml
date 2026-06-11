@@ -1,0 +1,35 @@
+title: Contact
+description: Get in touch with the team.
+sections:
+  - type: hero
+    heading: Get in touch
+    subheading: Drop us a line and we'll get back to you.
+
+  - type: form
+    heading: Send a message
+    integration: contact
+    successHref: /
+    submitLabel: Send
+    fields:
+      - name: name
+        label: Your name
+        required: true
+      - name: email
+        label: Email
+        type: email
+        required: true
+      - name: message
+        label: Message
+        type: textarea
+        required: true
+
+  - type: form
+    heading: Subscribe to the newsletter
+    body: Occasional updates. No spam, unsubscribe anytime.
+    integration: newsletter
+    submitLabel: Subscribe
+    fields:
+      - name: email
+        label: Email
+        type: email
+        required: true

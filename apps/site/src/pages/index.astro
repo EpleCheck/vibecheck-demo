@@ -1,0 +1,13 @@
+---
+import { getEntry } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import PageRenderer from '../components/PageRenderer.astro';
+
+// The home page is a content entry like any other: src/content/pages/home.yaml
+const page = await getEntry('pages', 'home');
+if (!page) throw new Error('Missing home content: src/content/pages/home.yaml');
+const { data } = page;
+---
+<Base title={data.title} description={data.description} seo={data.seo} lang={data.lang}>
+  <PageRenderer sections={data.sections} />
+</Base>

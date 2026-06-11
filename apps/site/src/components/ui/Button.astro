@@ -1,0 +1,79 @@
+---
+/**
+ * EpleCheck Button — native Astro port of the design-system Button.
+ * Renders <a> when `href` is set, otherwise <button>. Token-driven styling.
+ */
+interface Props {
+  variant?: 'primary' | 'secondary' | 'ghost' | 'danger';
+  size?: 'sm' | 'md' | 'lg';
+  href?: string;
+  type?: 'button' | 'submit' | 'reset';
+  fullWidth?: boolean;
+  class?: string;
+  [key: string]: any;
+}
+const {
+  variant = 'primary',
+  size = 'md',
+  href,
+  type = 'button',
+  fullWidth = false,
+  class: className = '',
+  ...rest
+} = Astro.props;
+const cls = [
+  'ec-btn',
+  `ec-btn--${variant}`,
+  `ec-btn--${size}`,
+  fullWidth ? 'ec-btn--block' : '',
+  className,
+].filter(Boolean).join(' ');
+---
+{href ? (
+  <a class={cls} href={href} {...rest}><slot /></a>
+) : (
+  <button class={cls} type={type} {...rest}><slot /></button>
+)}
+
+<style is:global>
+  .ec-btn{
+    --_bg:var(--color-brand); --_fg:var(--text-on-brand); --_bd:transparent;
+    display:inline-flex; align-items:center; justify-content:center; gap:.55em;
+    font-family:var(--font-sans); font-weight:var(--weight-semibold);
+    line-height:1; text-decoration:none; white-space:nowrap; cursor:pointer;
+    border:var(--border-thick) solid var(--_bd); border-radius:var(--radius-sm);
+    background:var(--_bg); color:var(--_fg);
+    transition:background var(--duration-fast) var(--ease-standard),
+               border-color var(--duration-fast) var(--ease-standard),
+               transform var(--duration-fast) var(--ease-standard);
+  }
+  .ec-btn:hover{ text-decoration:none; }
+  .ec-btn:active{ transform:scale(.98); }
+  .ec-btn:focus-visible{ outline:none; box-shadow:var(--shadow-focus); }
+  .ec-btn[aria-disabled="true"],.ec-btn:disabled{ opacity:.5; cursor:not-allowed; transform:none; }
+
+  /* sizes */
+  .ec-btn--sm{ font-size:var(--text-sm); padding:.5rem .85rem; }
+  .ec-btn--md{ font-size:var(--text-base); padding:.7rem 1.2rem; }
+  .ec-btn--lg{ font-size:var(--text-lg); padding:.9rem 1.5rem; }
+  .ec-btn--block{ width:100%; }
+
+  /* variants */
+  /* Primary uses magenta-600 (not the 500 brand anchor) so white text clears
+     the WCAG AA 4.5:1 contrast ratio; 500 fell just short on the filled button. */
+  .ec-btn--primary{ --_bg:var(--magenta-600); --_fg:var(--text-on-brand); --_bd:var(--magenta-600); }
+  .ec-btn--primary:hover{ --_bg:var(--magenta-700); --_bd:var(--magenta-700); }
+  .ec-btn--primary:active{ --_bg:var(--magenta-800); --_bd:var(--magenta-800); }
+
+  .ec-btn--secondary{ --_bg:var(--surface-card); --_fg:var(--color-brand); --_bd:var(--border-brand); }
+  .ec-btn--secondary:hover{ --_bg:var(--color-brand-subtle); }
+  .ec-btn--secondary:active{ --_bg:var(--magenta-100); }
+
+  .ec-btn--ghost{ --_bg:transparent; --_fg:var(--text-body); --_bd:transparent; }
+  .ec-btn--ghost:hover{ --_bg:var(--surface-sunken); }
+  .ec-btn--ghost:active{ --_bg:var(--ink-200); }
+
+  /* danger hover darkened by hand — kit referenced a non-existent --apple-red-600 */
+  .ec-btn--danger{ --_bg:var(--danger-500); --_fg:#fff; --_bd:var(--danger-500); }
+  .ec-btn--danger:hover{ --_bg:#b81b4b; --_bd:#b81b4b; }
+</style>

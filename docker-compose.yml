@@ -1,0 +1,20 @@
+# Run the VibeCheck MCP server.
+#
+#   1. cp apps/mcp/.env.example apps/mcp/.env   # then fill in the values
+#   2. docker compose up -d --build
+#
+# It listens on :8787 (POST /mcp). Put it behind HTTPS if you expose it publicly,
+# then add it to Claude as an MCP connector with header
+#   Authorization: Bearer <MCP_AUTH_TOKEN>
+services:
+  mcp:
+    # Build locally, or skip the build and pull the published image instead:
+    #   image: ghcr.io/eplecheck/vibecheck-mcp:latest   (then remove `build:`)
+    build:
+      context: .
+      dockerfile: apps/mcp/Dockerfile
+    image: vibecheck-mcp
+    env_file: apps/mcp/.env
+    ports:
+      - "8787:8787"
+    restart: unless-stopped

@@ -1,0 +1,102 @@
+---
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { withBase } from '../lib/url';
+import '../styles/styles.css';
+
+interface Props {
+  title: string;
+  description?: string;
+  seo?: { title?: string; description?: string; ogImage?: string };
+  breadcrumbs?: Array<{ name: string; url: string }>;
+  lang?: string;
+}
+
+const { title, description, seo, breadcrumbs, lang = 'en' } = Astro.props;
+const pageTitle = seo?.title ?? title;
+const metaDescription = seo?.description ?? description ?? '';
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
+
+const breadcrumbSchema =
+  breadcrumbs && breadcrumbs.length > 1
+    ? {
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: breadcrumbs.map((c, i) => ({
+          '@type': 'ListItem',
+          position: i + 1,
+          name: c.name,
+          item: new URL(withBase(c.url) ?? c.url, Astro.site).href,
+        })),
+      }
+    : null;
+---
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{pageTitle}</title>
+    {metaDescription && <meta name="description" content={metaDescription} />}
+    <link rel="canonical" href={canonical} />
+    <meta property="og:title" content={pageTitle} />
+    {metaDescription && <meta property="og:description" content={metaDescription} />}
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical} />
+    {seo?.ogImage && <meta property="og:image" content={seo.ogImage} />}
+    <meta name="twitter:card" content={seo?.ogImage ? 'summary_large_image' : 'summary'} />
+    <meta name="twitter:title" content={pageTitle} />
+    {metaDescription && <meta name="twitter:description" content={metaDescription} />}
+    {seo?.ogImage && <meta name="twitter:image" content={seo.ogImage} />}
+    <link rel="sitemap" href={withBase('/sitemap-index.xml')} />
+    {breadcrumbSchema && <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />}
+  </head>
+  <body>
+    <Header />
+    <main class="site-main">
+      {breadcrumbs && breadcrumbs.length > 1 && (
+        <nav class="breadcrumbs" aria-label="Breadcrumb">
+          <ol>
+            {breadcrumbs.map((c, i) => (
+              <li>
+                {i < breadcrumbs.length - 1 ? <a href={withBase(c.url)}>{c.name}</a> : <span aria-current="page">{c.name}</span>}
+              </li>
+            ))}
+          </ol>
+        </nav>
+      )}
+      <slot />
+    </main>
+    <Footer />
+
+    <style is:global>
+      :root {
+        --maxw: var(--container-max);
+        --accent: var(--color-brand);
+        --ink: var(--text-body);
+        --muted: var(--text-muted);
+      }
+      a { color: var(--text-link); }
+      .site-main { max-width: var(--maxw); margin: 0 auto; padding: var(--space-8) var(--container-pad); }
+      .breadcrumbs { margin-bottom: var(--space-6); font-size: var(--text-sm); }
+      .breadcrumbs ol { list-style: none; display: flex; flex-wrap: wrap; gap: var(--space-2); margin: 0; padding: 0; }
+      .breadcrumbs li { display: flex; align-items: center; gap: var(--space-2); color: var(--text-muted); }
+      .breadcrumbs li:not(:last-child)::after { content: '/'; color: var(--border-subtle); }
+      .breadcrumbs a { color: var(--text-link); text-decoration: none; }
+      .breadcrumbs a:hover { text-decoration: underline; }
+      .breadcrumbs [aria-current="page"] { color: var(--text-muted); }
+      .site-footer {
+        max-width: var(--maxw); margin: var(--space-12) auto 0;
+        padding: var(--space-8) var(--container-pad) var(--space-6);
+        border-top: var(--border-hairline) solid var(--border-subtle);
+        color: var(--text-muted);
+      }
+      .site-footer .foot-top { display: flex; flex-wrap: wrap; gap: var(--space-8); justify-content: space-between; }
+      .site-footer .foot-about { max-width: 22rem; }
+      .site-footer .foot-col { display: flex; flex-direction: column; gap: var(--space-2); }
+      .site-footer .foot-col strong, .site-footer .foot-about strong { display: block; margin-bottom: var(--space-2); color: var(--text-strong); }
+      .site-footer a { display: block; color: var(--text-link); }
+      .site-footer small { display: block; margin-top: var(--space-6); }
+    </style>
+  </body>
+</html>

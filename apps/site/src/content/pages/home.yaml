@@ -1,0 +1,62 @@
+title: VibeCheck — the agentic CMS you talk to
+description: A git-backed, schema-safe headless CMS you edit by chatting with an AI agent.
+seo:
+  title: VibeCheck — the agentic CMS you talk to
+  description: Edit your site by talking to an AI agent. Schema-safe, git-backed, deploys itself.
+sections:
+  - type: hero
+    heading: The CMS you talk to
+    subheading: >-
+      VibeCheck is a git-backed, schema-safe headless CMS. You bring the vibe — a
+      sentence to an AI agent — it does the check: validates, commits, deploys.
+    ctaLabel: How it works
+    ctaHref: /about/
+
+  - type: features
+    heading: Why VibeCheck
+    items:
+      - title: Edit by conversation
+        body: >-
+          "Add a pricing page with three tiers." The agent writes structured
+          content, commits it, and your site redeploys.
+      - title: Can't break the build
+        body: >-
+          Content is typed data, not markup. Every change is schema-validated, so
+          a bad edit fails the check instead of the site.
+      - title: Git-native
+        body: >-
+          Every edit is a reviewable commit on GitHub — full history, pull
+          requests, rollbacks. The workflow you already trust.
+      - title: Deploys itself
+        body: >-
+          Push to GitHub, ship to Vercel. Static output, fast everywhere, no
+          server to babysit.
+
+  - type: testimonials
+    heading: What people are saying
+    subject: VibeCheck
+    items:
+      - quote: >-
+          I described the page I wanted in a sentence and it shipped a clean,
+          structured version minutes later. No broken layouts, ever.
+        author: Sara Lindqvist
+        role: Founder, Nordlys Studio
+        rating: 5
+      - quote: >-
+          The schema guardrails mean I let the agent edit production copy
+          without holding my breath. A bad edit just fails the build.
+        author: Tom Whitfield
+        role: Engineering lead
+        rating: 5
+      - quote: >-
+          Every change is a normal git commit, so review and rollback are
+          exactly the workflow we already trust.
+        author: Priya Nair
+        role: Technical writer
+        rating: 4
+
+  - type: cta
+    heading: Ship your site by chatting
+    body: Use the template, connect Claude, and start editing in plain language.
+    ctaLabel: Get started
+    ctaHref: /about/

@@ -1,0 +1,101 @@
+/* ==========================================================================
+   EpleCheck — Color tokens
+   Brand DNA derived from the official logo: a warm SUNSET GRADIENT running
+   amber-orange → hot magenta, over charcoal device "screens", on white.
+   - Magenta is the primary solid brand (buttons, links, focus).
+   - Amber is the warm accent.
+   - The orange→pink gradient is the brand signature (logo, hero accents, key CTAs).
+   - Neutrals are near-true greys anchored on the charcoal screen tone.
+   Use the gradient deliberately, not as wallpaper.
+   ========================================================================== */
+:root {
+  /* --- Magenta / rose ramp (PRIMARY brand) — anchor 500 = #ec2473 --- */
+  --magenta-50:  #fdeaf2;
+  --magenta-100: #fbd0e1;
+  --magenta-200: #f7a3c4;
+  --magenta-300: #f26fa1;
+  --magenta-400: #ef4585;
+  --magenta-500: #ec2473; /* brand anchor — magenta end of the logo gradient */
+  --magenta-600: #cf1761;
+  --magenta-700: #a8124f;
+  --magenta-800: #810e3d;
+  --magenta-900: #5c0a2c;
+
+  /* --- Amber / orange ramp (ACCENT) — anchor 400 = #fbb756 --------- */
+  --amber-50:  #fff7ec;
+  --amber-100: #fdeccd;
+  --amber-200: #fcd896;
+  --amber-300: #fbc66a;
+  --amber-400: #fbb756; /* accent anchor — orange end of the logo gradient */
+  --amber-500: #f59e2e;
+  --amber-600: #e07f15;
+  --amber-700: #b5610f;
+  --amber-800: #8a490c;
+  --amber-900: #5f3208;
+
+  /* --- Charcoal / neutral ramp (anchored on screen tone #333) ------- */
+  --ink-900: #232323; /* primary text */
+  --ink-800: #333333; /* logo screen charcoal */
+  --ink-700: #4a4a4a;
+  --ink-600: #5e5e5e; /* muted text */
+  --ink-500: #7a7a7a;
+  --ink-400: #9b9b9b;
+  --ink-300: #c4c4c4;
+  --ink-200: #e4e4e6;
+  --ink-100: #eeeef0;
+  --ink-50:  #f6f6f7;
+  --white:   #ffffff;
+
+  /* --- Brand gradient (the signature) ------------------------------- */
+  --brand-gradient: linear-gradient(135deg, var(--amber-400) 0%, #f4793f 45%, var(--magenta-500) 100%);
+  --brand-gradient-soft: linear-gradient(135deg, var(--amber-50) 0%, var(--magenta-50) 100%);
+  --brand-gradient-text: linear-gradient(100deg, var(--amber-500) 0%, var(--magenta-500) 70%);
+
+  /* --- Semantic status ---------------------------------------------- */
+  --info-100:    #dceaf6;
+  --info-500:    #2b6cb0;
+  --success-100: #d8efe1;
+  --success-500: #1f8a52;
+  --warning-100: #fdeccd;
+  --warning-500: #b5610f;
+  --danger-100:  #fbd0e1;
+  --danger-500:  #d61f5a;
+
+  /* ====================================================================
+     SEMANTIC ALIASES — reference these in components, not raw ramp values
+     ==================================================================== */
+  /* Brand */
+  --color-brand:        var(--magenta-500);
+  --color-brand-hover:  var(--magenta-600);
+  --color-brand-active: var(--magenta-700);
+  --color-brand-subtle: var(--magenta-50);
+  --color-accent:       var(--amber-400);
+  --color-accent-strong:var(--amber-500);
+  --color-accent-subtle:var(--amber-50);
+
+  /* Text */
+  --text-strong:   var(--ink-900);
+  --text-body:     var(--ink-800);
+  --text-muted:    var(--ink-600);
+  --text-faint:    var(--ink-400);
+  --text-on-brand: var(--white);
+  --text-link:     var(--magenta-600);
+
+  /* Surfaces */
+  --surface-page:       var(--ink-50);
+  --surface-card:       var(--white);
+  --surface-sunken:     var(--ink-100);
+  --surface-brand:      var(--magenta-500);
+  --surface-brand-soft: var(--magenta-50);
+  --surface-accent-soft:var(--amber-50);
+  --surface-inverse:    var(--ink-900);
+
+  /* Borders */
+  --border-subtle:  var(--ink-200);
+  --border-default: var(--ink-300);
+  --border-strong:  var(--ink-400);
+  --border-brand:   var(--magenta-500);
+
+  /* Focus */
+  --focus-ring: var(--magenta-400);
+}

@@ -1,0 +1,30 @@
+---
+// Global footer. Edit the link columns to match your site.
+import { withBase } from '../lib/url';
+const year = new Date().getFullYear();
+const product = [
+  { label: 'Home', href: '/' },
+  { label: 'Pricing', href: '/pricing/' },
+].map((l) => ({ ...l, href: withBase(l.href) }));
+const company = [
+  { label: 'About', href: '/about/' },
+  { label: 'Contact', href: '/contact/' },
+].map((l) => ({ ...l, href: withBase(l.href) }));
+---
+<footer class="site-footer">
+  <div class="foot-top">
+    <div class="foot-about">
+      <strong>VibeCheck</strong>
+      <p>Built with VibeCheck — the agentic CMS you talk to. You bring the vibe; it does the check.</p>
+    </div>
+    <nav class="foot-col" aria-label="Product">
+      <strong>Product</strong>
+      {product.map((l) => <a href={l.href}>{l.label}</a>)}
+    </nav>
+    <nav class="foot-col" aria-label="Company">
+      <strong>Company</strong>
+      {company.map((l) => <a href={l.href}>{l.label}</a>)}
+    </nav>
+  </div>
+  <small>© {year} · Powered by VibeCheck</small>
+</footer>

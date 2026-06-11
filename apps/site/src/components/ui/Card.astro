@@ -1,0 +1,76 @@
+---
+/**
+ * EpleCheck Card — native Astro port. White surface, hairline border, 10px
+ * radius, flat by default. Renders <a> when `href` is set, otherwise <div>.
+ * Pass `title` (+ optional `body`) for the standard feature-card shape, or use
+ * the default slot for richer content.
+ */
+interface Props {
+  variant?: 'default' | 'soft' | 'sunken' | 'raised';
+  interactive?: boolean;
+  href?: string;
+  title?: string;
+  body?: string;
+  /** When set, the card becomes a full-bleed image tile (text baked into the
+   * image). Title is kept as visually-hidden text for SEO/accessibility. */
+  image?: string;
+  class?: string;
+  [key: string]: any;
+}
+const {
+  variant = 'default',
+  interactive = false,
+  href,
+  title,
+  body,
+  image,
+  class: className = '',
+  ...rest
+} = Astro.props;
+const cls = [
+  'ec-card',
+  variant !== 'default' ? `ec-card--${variant}` : '',
+  (interactive || href) ? 'ec-card--interactive' : '',
+  image ? 'ec-card--image' : '',
+  className,
+].filter(Boolean).join(' ');
+const Tag = href ? 'a' : 'div';
+---
+<Tag class={cls} href={href} {...rest}>
+  {image ? (
+    <img class="ec-card__img" src={image} alt={title ?? ''} loading="lazy" decoding="async" width="435" height="656" />
+  ) : (
+    <>
+      {title && <h3 class="ec-card__title">{title}</h3>}
+      {body && <p class="ec-card__body">{body}</p>}
+      <slot />
+    </>
+  )}
+</Tag>
+
+<style is:global>
+  .ec-card{
+    background:var(--surface-card); border:var(--border-hairline) solid var(--border-subtle);
+    border-radius:var(--radius-md); padding:var(--space-6);
+    font-family:var(--font-sans); color:var(--text-body);
+  }
+  .ec-card--soft{ background:var(--surface-brand-soft); border-color:var(--magenta-200); }
+  .ec-card--sunken{ background:var(--surface-sunken); border-color:var(--border-subtle); }
+  .ec-card--raised{ box-shadow:var(--shadow-md); border-color:transparent; }
+  .ec-card--interactive{ transition:border-color var(--duration-fast) var(--ease-standard),
+    box-shadow var(--duration-base) var(--ease-standard); text-decoration:none; display:block; color:inherit; }
+  .ec-card--interactive:hover{ border-color:var(--border-brand); box-shadow:var(--shadow-sm); text-decoration:none; }
+  /* Full-bleed image tile: text is baked into the image (435x656 source). The
+     <img> carries descriptive alt text so it's indexable in Google Images. */
+  .ec-card--image{ padding:0; overflow:hidden; aspect-ratio:435 / 656; }
+  .ec-card__img{ display:block; width:100%; height:100%; object-fit:cover; }
+  .ec-card--image.ec-card--interactive{ transition:transform var(--duration-base) var(--ease-standard),
+    box-shadow var(--duration-base) var(--ease-standard); }
+  .ec-card--image.ec-card--interactive:hover{ transform:translateY(-2px); box-shadow:var(--shadow-md); }
+  .ec-card__icon{ display:inline-flex; width:44px; height:44px; align-items:center; justify-content:center;
+    border-radius:var(--radius-sm); background:var(--surface-brand-soft); color:var(--color-brand); margin-bottom:var(--space-3); }
+  .ec-card__icon svg{ width:24px; height:24px; stroke-width:2; }
+  .ec-card__title{ font-family:var(--font-display); font-size:var(--text-xl); font-weight:var(--weight-semibold);
+    color:var(--text-strong); margin:0 0 var(--space-2); }
+  .ec-card__body{ font-size:var(--text-base); color:var(--text-body); margin:0; line-height:var(--leading-normal); }
+</style>

@@ -1,0 +1,256 @@
+---
+/**
+ * Renders an array of structured sections into HTML.
+ * This is the fixed, tested template the MCP-generated content flows through —
+ * content files never contain markup, only data, so generated pages can't
+ * break the build with stray tags.
+ */
+import Button from './ui/Button.astro';
+import Card from './ui/Card.astro';
+import PricingCard from './ui/PricingCard.astro';
+import { withBase } from '../lib/url';
+import { resolveIntegration } from '../lib/integrations';
+
+type Section = Record<string, any> & { type: string };
+interface Props { sections: Section[] }
+const { sections } = Astro.props;
+---
+{sections.map((s) => {
+  if (s.type === 'hero') {
+    return (
+      <section class="sec hero">
+        <h1>{s.heading}</h1>
+        {s.subheading && <p class="lead">{s.subheading}</p>}
+        {s.ctaLabel && s.ctaHref && <p><Button href={withBase(s.ctaHref)} size="lg">{s.ctaLabel}</Button></p>}
+      </section>
+    );
+  }
+  if (s.type === 'features') {
+    return (
+      <section class="sec features">
+        {s.heading && <h2>{s.heading}</h2>}
+        <div class="grid">
+          {s.items.map((it: any) => (
+            <Card title={it.title} body={it.body} href={withBase(it.href)} image={it.image} />
+          ))}
+        </div>
+      </section>
+    );
+  }
+  if (s.type === 'pricing') {
+    return (
+      <section class="sec pricing">
+        {s.heading && <h2>{s.heading}</h2>}
+        <div class="grid">
+          {s.plans.map((p: any) => (
+            <PricingCard
+              name={p.name}
+              price={p.price}
+              unit={p.unit}
+              features={p.features}
+              highlighted={p.highlighted}
+            >
+              {p.ctaLabel && p.ctaHref && (
+                <Button href={withBase(p.ctaHref)} variant={p.highlighted ? 'primary' : 'secondary'} fullWidth>{p.ctaLabel}</Button>
+              )}
+            </PricingCard>
+          ))}
+        </div>
+      </section>
+    );
+  }
+  if (s.type === 'cta') {
+    return (
+      <section class="sec cta">
+        <h2>{s.heading}</h2>
+        {s.body && <p>{s.body}</p>}
+        <p><Button href={withBase(s.ctaHref)} size="lg">{s.ctaLabel}</Button></p>
+      </section>
+    );
+  }
+  if (s.type === 'richtext') {
+    return <section class="sec richtext" set:html={s.html} />;
+  }
+  if (s.type === 'faq') {
+    // Emit the same Q&A twice: visible <details> for humans, FAQPage JSON-LD
+    // for search engines. Answers are plain text (schema-enforced), so the
+    // JSON-LD stringify is safe — no markup to escape or break the page.
+    const jsonLd = {
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: s.items.map((it: any) => ({
+        '@type': 'Question',
+        name: it.question,
+        acceptedAnswer: { '@type': 'Answer', text: it.answer },
+      })),
+    };
+    return (
+      <section class="sec faq">
+        {s.heading && <h2>{s.heading}</h2>}
+        <div class="faq-list">
+          {s.items.map((it: any) => (
+            <details class="faq-item">
+              <summary>{it.question}</summary>
+              <p>{it.answer}</p>
+            </details>
+          ))}
+        </div>
+        {s.items.length > 0 && (
+          <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+        )}
+      </section>
+    );
+  }
+  if (s.type === 'testimonials') {
+    // Visible quote cards + Review JSON-LD for search. Quote/author are plain
+    // text (schema-enforced), so the JSON-LD stringify is safe. `itemReviewed`
+    // is only emitted when the section names a `subject` — a Review of nothing
+    // isn't meaningful, so we omit the relation rather than fake it.
+    const reviews = s.items.map((it: any) => ({
+      '@context': 'https://schema.org',
+      '@type': 'Review',
+      reviewBody: it.quote,
+      author: { '@type': 'Person', name: it.author },
+      ...(it.rating
+        ? { reviewRating: { '@type': 'Rating', ratingValue: it.rating, bestRating: 5 } }
+        : {}),
+      ...(s.subject ? { itemReviewed: { '@type': 'Thing', name: s.subject } } : {}),
+    }));
+    return (
+      <section class="sec testimonials">
+        {s.heading && <h2>{s.heading}</h2>}
+        <div class="grid">
+          {s.items.map((it: any) => (
+            <figure class="testimonial">
+              {it.rating && (
+                <div class="stars" aria-label={`${it.rating} out of 5`}>
+                  {'★'.repeat(it.rating)}{'☆'.repeat(5 - it.rating)}
+                </div>
+              )}
+              <blockquote>{it.quote}</blockquote>
+              <figcaption>
+                {it.image && <img src={withBase(it.image)} alt="" width="40" height="40" />}
+                <span><strong>{it.author}</strong>{it.role && <span class="role">{it.role}</span>}</span>
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+        {reviews.map((r) => (
+          <script type="application/ld+json" set:html={JSON.stringify(r)} />
+        ))}
+      </section>
+    );
+  }
+  if (s.type === 'embed') {
+    // Build the src from a fixed per-provider template — content only supplies a
+    // bare id (schema-constrained), so there's no way to inject an arbitrary
+    // iframe source the way raw richtext HTML could.
+    const src = s.provider === 'vimeo'
+      ? `https://player.vimeo.com/video/${s.id}`
+      : `https://www.youtube.com/embed/${s.id}`;
+    return (
+      <section class="sec embed">
+        {s.heading && <h2>{s.heading}</h2>}
+        <div class="embed-frame">
+          <iframe
+            src={src}
+            title={s.title}
+            loading="lazy"
+            allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen
+          ></iframe>
+        </div>
+        {s.caption && <p class="embed-caption">{s.caption}</p>}
+      </section>
+    );
+  }
+  if (s.type === 'form') {
+    // Resolve the named integration to a real endpoint at build time. An unknown
+    // name throws here, failing the build — content can't reference a submission
+    // target that nobody registered.
+    const integration = resolveIntegration(s.integration);
+    return (
+      <section class="sec form">
+        <h2>{s.heading}</h2>
+        {s.body && <p>{s.body}</p>}
+        <form method={integration.method ?? 'POST'} action={integration.endpoint}>
+          {s.successHref && <input type="hidden" name="_next" value={s.successHref} />}
+          {s.subject && <input type="hidden" name="_subject" value={s.subject} />}
+          {/* Honeypot: bots fill this hidden field; real users never see it. */}
+          <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" style="display:none" />
+          {s.fields.map((f: any) => (
+            <label class="field">
+              <span>{f.label}{f.required && ' *'}</span>
+              {f.type === 'textarea' ? (
+                <textarea name={f.name} required={f.required} rows="5"></textarea>
+              ) : f.type === 'select' ? (
+                <select name={f.name} required={f.required}>
+                  {f.options.map((o: string) => <option value={o}>{o}</option>)}
+                </select>
+              ) : (
+                <input type={f.type} name={f.name} required={f.required} />
+              )}
+            </label>
+          ))}
+          <Button type="submit">{s.submitLabel}</Button>
+        </form>
+      </section>
+    );
+  }
+  return null;
+})}
+
+<style>
+  /* Section layout. Components (Button/Card/PricingCard) own their own styling. */
+  .sec { margin: var(--space-10) 0; }
+  .hero h1 { font-size: var(--type-h1-size); margin: 0 0 var(--space-2); }
+  .lead { font-size: var(--type-lead-size); color: var(--text-muted); }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); gap: var(--space-5); }
+  /* Image-tile grids (e.g. front-page "Våre tjenester") stay 2x2 on mobile
+     instead of collapsing to a single column. Text-card grids are untouched. */
+  @media (max-width: 40rem) {
+    .grid:has(.ec-card--image) { grid-template-columns: 1fr 1fr; gap: var(--space-3); }
+  }
+  .faq .faq-list { display: grid; gap: var(--space-3); max-width: 48rem; }
+  .faq .faq-item {
+    border: var(--border-hairline) solid var(--border-default);
+    border-radius: var(--radius-sm); background: var(--surface-card);
+    padding: var(--space-3) var(--space-4);
+  }
+  .faq .faq-item summary {
+    font-weight: var(--weight-semibold); cursor: pointer; list-style: none;
+  }
+  .faq .faq-item summary::-webkit-details-marker { display: none; }
+  .faq .faq-item summary::after { content: '+'; float: right; color: var(--text-muted); }
+  .faq .faq-item[open] summary::after { content: '–'; }
+  .faq .faq-item p { margin: var(--space-2) 0 0; color: var(--text-muted); }
+  .testimonial {
+    margin: 0; padding: var(--space-5);
+    border: var(--border-hairline) solid var(--border-default);
+    border-radius: var(--radius-sm); background: var(--surface-card);
+    display: grid; gap: var(--space-3); align-content: start;
+  }
+  .testimonial .stars { color: var(--border-brand); letter-spacing: 0.1em; }
+  .testimonial blockquote { margin: 0; font-size: var(--type-lead-size); }
+  .testimonial figcaption { display: flex; align-items: center; gap: var(--space-3); }
+  .testimonial figcaption img { border-radius: 50%; object-fit: cover; }
+  .testimonial figcaption .role { display: block; color: var(--text-muted); font-size: var(--text-sm); }
+  .embed .embed-frame {
+    position: relative; aspect-ratio: 16 / 9; max-width: 48rem;
+    border-radius: var(--radius-sm); overflow: hidden;
+    border: var(--border-hairline) solid var(--border-default);
+  }
+  .embed .embed-frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+  .embed .embed-caption { margin: var(--space-2) 0 0; color: var(--text-muted); font-size: var(--text-sm); }
+  .form form { display: grid; gap: var(--space-4); max-width: 32rem; }
+  .form .field { display: grid; gap: var(--space-1); }
+  .form .field span { font-weight: var(--weight-semibold); font-size: var(--text-sm); }
+  .form input, .form textarea, .form select {
+    padding: 0.6rem; border: var(--border-hairline) solid var(--border-default);
+    border-radius: var(--radius-sm); font: inherit; background: var(--surface-card);
+  }
+  .form input:focus-visible, .form textarea:focus-visible, .form select:focus-visible {
+    outline: var(--border-thick) solid var(--focus-ring); outline-offset: 2px;
+    border-color: var(--border-brand);
+  }
+</style>

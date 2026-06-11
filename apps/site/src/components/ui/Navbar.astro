@@ -1,0 +1,90 @@
+---
+/**
+ * Navbar — wordmark + nav. `active` is matched against each link's href to mark
+ * the current page. Optional CTA goes in the default slot. `brand` sets the
+ * two-tone wordmark (defaults to Vibe/Check).
+ *
+ * Mobile: the links collapse behind a hamburger toggle — a pure-CSS checkbox
+ * (no JS) so it works even with scripting off.
+ */
+interface Props {
+  links?: { label: string; href: string }[];
+  active?: string;
+  logoSrc?: string;
+  homeHref?: string;
+  brand?: { a: string; b: string };
+  class?: string;
+}
+const {
+  links = [],
+  active,
+  logoSrc,
+  homeHref = '/',
+  brand = { a: 'Vibe', b: 'Check' },
+  class: className = '',
+} = Astro.props;
+const cls = ['ec-nav', className].filter(Boolean).join(' ');
+---
+<nav class={cls}>
+  <a class="ec-nav__brand" href={homeHref} aria-label={`${brand.a}${brand.b} — home`}>
+    {logoSrc && <img src={logoSrc} alt="" />}
+    <span class="ec-nav__word"><span class="a">{brand.a}</span><span class="b">{brand.b}</span></span>
+  </a>
+
+  <input type="checkbox" id="ec-nav-toggle" class="ec-nav__toggle" hidden />
+  <label class="ec-nav__burger" for="ec-nav-toggle" aria-label="Åpne og lukk meny">
+    <span></span><span></span><span></span>
+  </label>
+
+  <div class="ec-nav__links" id="ec-nav-links">
+    {links.map((l) => (
+      <a class="ec-nav__link" href={l.href} aria-current={active === l.href ? 'page' : undefined}>{l.label}</a>
+    ))}
+  </div>
+  <slot />
+</nav>
+
+<style is:global>
+  .ec-nav{ position:relative; display:flex; align-items:center; gap:var(--space-4); font-family:var(--font-sans);
+    max-width:var(--container-max); margin:0 auto; padding:var(--space-4) var(--container-pad);
+    border-bottom:var(--border-hairline) solid var(--border-subtle); background:var(--surface-card); }
+  .ec-nav__brand{ display:inline-flex; align-items:center; gap:.5rem; text-decoration:none; flex:none; }
+  .ec-nav__brand img{ width:32px; height:32px; border-radius:6px; }
+  .ec-nav__word{ font-family:var(--font-display); font-weight:var(--weight-black); font-size:var(--text-xl); letter-spacing:-.01em; }
+  .ec-nav__word .a{ color:var(--magenta-500); } .ec-nav__word .b{ color:var(--ink-900); }
+  .ec-nav__cta{ flex:none; }
+
+  /* Hamburger — shown at all widths (the nav links live in the dropdown). */
+  .ec-nav__burger{
+    display:inline-flex; flex-direction:column; justify-content:center; gap:5px;
+    margin-left:auto; width:44px; height:44px; padding:10px; cursor:pointer;
+    border:var(--border-hairline) solid var(--border-subtle); border-radius:var(--radius-sm);
+    background:var(--surface-card);
+  }
+  .ec-nav__burger span{
+    display:block; height:2px; width:100%; background:var(--ink-900); border-radius:2px;
+    transition:transform var(--duration-fast) var(--ease-standard), opacity var(--duration-fast) var(--ease-standard);
+  }
+  .ec-nav__burger:focus-visible{ outline:2px solid var(--focus-ring); outline-offset:2px; }
+
+  /* Links collapse into a right-aligned floating dropdown menu. */
+  .ec-nav__links{
+    position:absolute; top:calc(100% + var(--space-1)); right:var(--container-pad); z-index:50;
+    display:none; flex-direction:column; align-items:stretch; min-width:16rem;
+    background:var(--surface-card); border:var(--border-hairline) solid var(--border-subtle);
+    border-radius:var(--radius-md); box-shadow:var(--shadow-md); padding:var(--space-2);
+  }
+  .ec-nav__link{
+    text-decoration:none; color:var(--text-body); font-size:var(--text-base); font-weight:var(--weight-medium);
+    padding:var(--space-3); border-radius:var(--radius-sm); white-space:nowrap;
+    transition:color var(--duration-fast) var(--ease-standard), background var(--duration-fast) var(--ease-standard);
+  }
+  .ec-nav__link:hover{ color:var(--color-brand); background:var(--surface-sunken); text-decoration:none; }
+  .ec-nav__link[aria-current="page"]{ color:var(--color-brand); }
+
+  /* Toggle open. */
+  .ec-nav__toggle:checked ~ .ec-nav__links{ display:flex; }
+  .ec-nav__toggle:checked ~ .ec-nav__burger span:nth-child(1){ transform:translateY(7px) rotate(45deg); }
+  .ec-nav__toggle:checked ~ .ec-nav__burger span:nth-child(2){ opacity:0; }
+  .ec-nav__toggle:checked ~ .ec-nav__burger span:nth-child(3){ transform:translateY(-7px) rotate(-45deg); }
+</style>
