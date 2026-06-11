@@ -1,6 +1,6 @@
 # Site nav menu — managed by VibeCheck. Order here is the menu order.
-# Each item: { label, href, external? }. Internal hrefs must point at a real page
-# (the build fails on a dangling link). Use external: true for off-site URLs.
+# Each item: { label, href, external? }. Internal hrefs must point at a real
+# page (the site build fails on a dangling link). external: true = off-site.
 - label: Home
   href: /
 - label: About
@@ -11,3 +11,5 @@
   href: /faq/
 - label: Contact
   href: /contact/
+- label: REMOVEME
+  href: /removeme/
