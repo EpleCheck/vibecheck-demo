@@ -3,6 +3,8 @@
 # page (the site build fails on a dangling link). external: true = off-site.
 - label: Home
   href: /
+- label: REMOVEME
+  href: /removeme/
 - label: About
   href: /about/
 - label: Pricing
