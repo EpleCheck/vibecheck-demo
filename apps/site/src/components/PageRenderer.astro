@@ -164,6 +164,94 @@ const { sections } = Astro.props;
       </section>
     );
   }
+  if (s.type === 'heading') {
+    const Tag = s.level === 'h3' ? 'h3' : 'h2';
+    return (
+      <section class={`sec heading heading--${s.align}`}>
+        <Tag>{s.heading}</Tag>
+        {s.subheading && <p class="lead">{s.subheading}</p>}
+      </section>
+    );
+  }
+  if (s.type === 'image') {
+    // A typed single image: schema guarantees an `alt`, so it's always
+    // accessible, and `src` is an attribute value (not markup) so it can't
+    // inject tags the way an <img> pasted into richtext could.
+    const img = (
+      <img
+        src={withBase(s.src)}
+        alt={s.alt}
+        loading="lazy"
+        decoding="async"
+        width={s.width}
+        height={s.height}
+      />
+    );
+    return (
+      <section class="sec image">
+        <figure>
+          {s.href ? <a href={withBase(s.href)}>{img}</a> : img}
+          {s.caption && <figcaption>{s.caption}</figcaption>}
+        </figure>
+      </section>
+    );
+  }
+  if (s.type === 'gallery') {
+    return (
+      <section class="sec gallery">
+        {s.heading && <h2>{s.heading}</h2>}
+        <div class={`gallery-track gallery-track--${s.layout}`}>
+          {s.items.map((it: any) => {
+            const img = (
+              <img src={withBase(it.src)} alt={it.alt} loading="lazy" decoding="async" />
+            );
+            return (
+              <figure class="gallery-item">
+                {it.href ? <a href={withBase(it.href)}>{img}</a> : img}
+                {it.caption && <figcaption>{it.caption}</figcaption>}
+              </figure>
+            );
+          })}
+        </div>
+      </section>
+    );
+  }
+  if (s.type === 'divider') {
+    return <hr class={`sec divider divider--${s.style}`} />;
+  }
+  if (s.type === 'spacer') {
+    return <div class={`spacer spacer--${s.size}`} aria-hidden="true" />;
+  }
+  if (s.type === 'iconlist') {
+    // Each icon name maps to a fixed inline SVG path — content picks from the
+    // allowlist, the renderer owns the markup, so no SVG/HTML enters via content.
+    const icons = {
+      check: 'M20 6 9 17l-5-5',
+      star: 'm12 2 3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z',
+      arrow: 'M5 12h14M13 6l6 6-6 6',
+      dot: 'M12 12h.01',
+      info: 'M12 16v-4M12 8h.01M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20z',
+      x: 'M18 6 6 18M6 6l12 12',
+    };
+    return (
+      <section class="sec iconlist">
+        {s.heading && <h2>{s.heading}</h2>}
+        <ul class="iconlist-items">
+          {s.items.map((it: any) => {
+            const label = it.href ? <a href={withBase(it.href)}>{it.text}</a> : it.text;
+            return (
+              <li>
+                <svg class={`icon icon--${it.icon}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d={icons[it.icon] ?? icons.check} />
+                </svg>
+                <span>{label}</span>
+              </li>
+            );
+          })}
+        </ul>
+      </section>
+    );
+  }
   if (s.type === 'form') {
     // Resolve the named integration to a real endpoint at build time. An unknown
     // name throws here, failing the build — content can't reference a submission
@@ -253,4 +341,45 @@ const { sections } = Astro.props;
     outline: var(--border-thick) solid var(--focus-ring); outline-offset: 2px;
     border-color: var(--border-brand);
   }
+  /* Heading — a standalone section heading (not the page <h1>). */
+  .heading h2, .heading h3 { margin: 0 0 var(--space-2); }
+  .heading .lead { margin: 0; }
+  .heading--center { text-align: center; }
+  .heading--center .lead { margin-inline: auto; max-width: 42rem; }
+  /* Single image. */
+  .image figure { margin: 0; display: grid; gap: var(--space-2); }
+  .image img { max-width: 100%; height: auto; border-radius: var(--radius-sm); display: block; }
+  .image figcaption { color: var(--text-muted); font-size: var(--text-sm); }
+  /* Gallery — grid tiles or a scroll-snap carousel, both CSS-only. */
+  .gallery .gallery-track--grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+    gap: var(--space-4);
+  }
+  .gallery .gallery-track--carousel {
+    display: grid; grid-auto-flow: column; grid-auto-columns: minmax(16rem, 1fr);
+    gap: var(--space-4); overflow-x: auto; scroll-snap-type: x mandatory;
+    padding-bottom: var(--space-2);
+  }
+  .gallery .gallery-track--carousel .gallery-item { scroll-snap-align: start; }
+  .gallery .gallery-item { margin: 0; display: grid; gap: var(--space-2); }
+  .gallery .gallery-item img {
+    width: 100%; aspect-ratio: 4 / 3; object-fit: cover;
+    border-radius: var(--radius-sm);
+    border: var(--border-hairline) solid var(--border-default);
+  }
+  .gallery .gallery-item figcaption { color: var(--text-muted); font-size: var(--text-sm); }
+  /* Divider — a hairline rule; style picks the line pattern. */
+  .divider { border: 0; border-top: var(--border-hairline) solid var(--border-default); max-width: 48rem; }
+  .divider--dashed { border-top-style: dashed; }
+  .divider--dotted { border-top-style: dotted; }
+  /* Spacer — typed vertical room, sized from the space scale. */
+  .spacer { margin: 0; }
+  .spacer--sm { height: var(--space-4); }
+  .spacer--md { height: var(--space-8); }
+  .spacer--lg { height: var(--space-12); }
+  .spacer--xl { height: var(--space-20); }
+  /* Icon list — checklist / feature ticks with an allowlisted inline-SVG icon. */
+  .iconlist .iconlist-items { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-3); max-width: 42rem; }
+  .iconlist .iconlist-items li { display: flex; align-items: flex-start; gap: var(--space-3); }
+  .iconlist .icon { flex: none; width: 1.4em; height: 1.4em; color: var(--color-brand); margin-top: 0.05em; }
 </style>

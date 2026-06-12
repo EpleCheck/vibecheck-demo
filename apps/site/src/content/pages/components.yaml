@@ -1,0 +1,67 @@
+title: Sections — the typed building blocks
+description: A live tour of VibeCheck's typed content sections. Every block here is data, not markup, so an AI agent can compose pages without writing HTML that could break the build.
+seo:
+  title: VibeCheck sections — typed content building blocks
+  description: heading, image, gallery, divider, spacer, icon list, and more — typed sections an agent edits as data.
+sections:
+  - type: hero
+    heading: Typed sections, not markup
+    subheading: >-
+      Every block on this page is structured data the agent edits by name. Ask it
+      to "add a gallery" or "drop in a checklist" — it can't reach for raw HTML,
+      so a generated page can't break the build.
+
+  - type: heading
+    heading: Heading section
+    subheading: A standalone heading with an optional sub-line — left or centre aligned.
+    level: h2
+    align: left
+
+  - type: iconlist
+    heading: Why typed beats raw HTML
+    items:
+      - text: Machine-generated content can't inject stray tags
+        icon: check
+      - text: Every image carries required alt text
+        icon: check
+      - text: Icons come from an allowlist — never raw SVG
+        icon: star
+      - text: See how it all fits together
+        icon: arrow
+        href: /about/
+
+  - type: divider
+    style: solid
+
+  - type: image
+    src: /demo/tile-1.svg
+    alt: A magenta-to-violet gradient placeholder tile
+    caption: A single image section — alt text is schema-required, so it's always accessible.
+    width: 400
+    height: 300
+
+  - type: spacer
+    size: lg
+
+  - type: gallery
+    heading: Gallery section
+    layout: grid
+    items:
+      - src: /demo/tile-1.svg
+        alt: Magenta-to-violet gradient tile numbered 01
+        caption: Grid tile 01
+      - src: /demo/tile-2.svg
+        alt: Blue gradient tile numbered 02
+        caption: Grid tile 02
+      - src: /demo/tile-3.svg
+        alt: Green gradient tile numbered 03
+        caption: Grid tile 03
+
+  - type: divider
+    style: dashed
+
+  - type: cta
+    heading: Try it yourself
+    body: Connect Claude to this demo and ask it to add a section — it edits the same typed data you see here.
+    ctaLabel: How it works
+    ctaHref: /about/

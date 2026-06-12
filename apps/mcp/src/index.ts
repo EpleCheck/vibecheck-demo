@@ -169,8 +169,10 @@ PUBLISH MODES (every write tool)
 
 CONTENT MODEL
 - A page is data, not markup: sections of type hero | features | pricing | cta |
-  richtext | form. Only richtext carries raw HTML, so generated content can't break
-  the build. The schema is the @vibecheck/schema contract the site also validates against.
+  richtext | faq | testimonials | embed | heading | image | gallery | divider |
+  spacer | iconlist | form. Only richtext carries raw HTML, so generated content
+  can't break the build. The schema is the @vibecheck/schema contract the site also
+  validates against.
 
 SEO / URLS (important)
 - URLs are sacred: preserve slugs. delete_page and rename_page record 301s in the

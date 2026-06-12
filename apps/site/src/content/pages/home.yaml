@@ -55,6 +55,19 @@ sections:
         role: Technical writer
         rating: 4
 
+  - type: iconlist
+    heading: Typed sections, not markup
+    items:
+      - text: Headings, images, and galleries the agent edits as data
+        icon: check
+      - text: Checklists and icon lists like this one — no raw SVG
+        icon: star
+      - text: Dividers and spacers for layout without HTML
+        icon: check
+      - text: See every section in action
+        icon: arrow
+        href: /components/
+
   - type: cta
     heading: Ship your site by chatting
     body: Use the template, connect Claude, and start editing in plain language.

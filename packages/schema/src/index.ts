@@ -124,6 +124,77 @@ const embed = z.object({
   caption: z.string().optional(),
 });
 
+const heading = z.object({
+  type: z.literal('heading'),
+  heading: z.string(),
+  subheading: z.string().optional(),
+  // Semantic level — h2 by default. The page's <h1> belongs to the hero/title,
+  // so a standalone heading section is a section heading, not the page title.
+  level: z.enum(['h2', 'h3']).default('h2'),
+  align: z.enum(['left', 'center']).default('left'),
+});
+
+const image = z.object({
+  type: z.literal('image'),
+  // A path or URL to an image — an attribute value, never markup, so unlike a
+  // raw <img> in richtext it can't carry tags. `alt` is required so a typed
+  // image is always accessible (the whole point of modelling it instead of HTML).
+  src: z.string(),
+  alt: z.string(),
+  caption: z.string().optional(),
+  // Optional link wrapper (e.g. a logo that links somewhere).
+  href: z.string().optional(),
+  width: z.number().int().positive().optional(),
+  height: z.number().int().positive().optional(),
+});
+
+const gallery = z.object({
+  type: z.literal('gallery'),
+  heading: z.string().optional(),
+  // grid = responsive tiles; carousel = horizontal scroll-snap strip. Both are
+  // CSS-only (static output, no client JS), so the page stays a static HTML file.
+  layout: z.enum(['grid', 'carousel']).default('grid'),
+  items: z
+    .array(
+      z.object({
+        src: z.string(),
+        alt: z.string(),
+        caption: z.string().optional(),
+        href: z.string().optional(),
+      }),
+    )
+    .default([]),
+});
+
+const divider = z.object({
+  type: z.literal('divider'),
+  style: z.enum(['solid', 'dashed', 'dotted']).default('solid'),
+});
+
+const spacer = z.object({
+  type: z.literal('spacer'),
+  // A named space token, not a raw pixel value — content asks for "more room",
+  // the design system decides how much, so spacing stays consistent.
+  size: z.enum(['sm', 'md', 'lg', 'xl']).default('md'),
+});
+
+const iconlist = z.object({
+  type: z.literal('iconlist'),
+  heading: z.string().optional(),
+  items: z
+    .array(
+      z.object({
+        text: z.string(),
+        // Allowlisted icon name, not arbitrary markup — the renderer maps each
+        // to a fixed inline SVG, so content can pick an icon without ever
+        // supplying SVG/HTML (the same containment as `embed`'s providers).
+        icon: z.enum(['check', 'star', 'arrow', 'dot', 'info', 'x']).default('check'),
+        href: z.string().optional(),
+      }),
+    )
+    .default([]),
+});
+
 const form = z.object({
   type: z.literal('form'),
   heading: z.string(),
@@ -159,6 +230,12 @@ export const sectionSchema = z.discriminatedUnion('type', [
   faq,
   testimonials,
   embed,
+  heading,
+  image,
+  gallery,
+  divider,
+  spacer,
+  iconlist,
   form,
 ]);
 
